@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+    <title>Новости</title>
+
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">{{ username }}</a>
+    <form method="POST" novalidate>
+    </form>
+
+    {% if mod == 1 %}
+        <a href="/users_log">Список пользователей</a>
+    {% endif %}
+    <a href="/">Главная страница</a>
+    <a href="/download_file">Загрузить</a>
+    <a href="#">Друзья</a>
+    <a href="/logout">Logout</a>
+
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+            </li>
+        </ul>
+    </div>
+</nav>
+{% for item in news %}
+    <div class="alert alert-dark" role="alert">
+        <h2>{{ item[1] }}</h2>
+        <div>{{ item[2] }}</div>
+        {% if id == item[0] or id == 1 %}
+            <a href="/delete_news/{{ item[0] }}">Удалить новость</a>
+        {% endif %}
+        <a> {{ item[-1] }} </a>
+    </div>
+{% endfor %}
+{% block file_download %}{% endblock %}
+{% block user_list %}{% endblock %}
+</body>
+</html>
