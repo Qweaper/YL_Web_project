@@ -10,16 +10,18 @@ class BooksModel:
                              title VARCHAR(100),
                              description VARCHAR(1000),
                              book_filename VARCHAR (50),
-                             user_id INTEGER
+                             user_id INTEGER,
+                             author VARCHAR (100)
                              )''')
         cursor.close()
         self.connection.commit()
 
-    def insert(self, title, description, user_id, book_filename):
+    def insert(self, author, title, description, user_id, book_filename):
         cursor = self.connection.cursor()
-        cursor.execute('''INSERT INTO books
-                          (title, description, user_id, book_filename) 
-                          VALUES (?,?,?,?)''', (title, description, str(user_id), book_filename))
+        cursor.execute('''INSERT INTO books 
+                          (author, title, description, user_id, book_filename) 
+                          VALUES (?,?,?,?,?)''', (author, str(title), str(description), str(user_id),
+                                                  str(book_filename)))
         cursor.close()
         self.connection.commit()
 
@@ -38,6 +40,17 @@ class BooksModel:
             cursor.execute("SELECT * FROM books")
         rows = cursor.fetchall()
         return rows
+
+    def get_book_id(self, title, description, user_id, book_filename):
+        cursor = self.connection.cursor()
+        cursor.execute('''SELECT id FROM books WHERE 
+                              title=? AND description=? AND user_id=? AND book_filename=? 
+                              ''',
+                       (str(title), str(description), str(user_id), str(book_filename)))
+        info = cursor.fetchone()
+        cursor.close()
+        self.connection.commit()
+        return info
 
     def delete(self, book_id):
         cursor = self.connection.cursor()

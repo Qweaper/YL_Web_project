@@ -3,6 +3,16 @@
     <form method="post" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
         <p>
+            {{ form.author.label }}<br>
+            {{ form.author }}
+            {% for error in form.author.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
+
+        <p>
             {{ form.title.label }}<br>
             {{ form.title }}<br>
             {% for error in form.title.errors %}
@@ -12,9 +22,9 @@
             {% endfor %}
         </p>
         <p>
-            {{ form.content.label }}<br>
-            {{ form.content }}<br>
-            {% for error in form.content.errors %}
+            {{ form.description.label }}<br>
+            {{ form.description }}<br>
+            {% for error in form.description.errors %}
                 <div class="alert alert-danger" role="alert">
                     {{ error }}
                 </div>

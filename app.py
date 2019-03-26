@@ -1,7 +1,8 @@
+import json
 from flask import Flask, redirect, render_template, request
 from userDB import UserModel
 from database import DB
-from booksDB import BooksModel  #######
+from booksDB import BooksModel
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
 from wtforms import StringField, SubmitField, TextAreaField, FileField
 from wtforms.validators import DataRequired
@@ -25,9 +26,24 @@ app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 curr_user = ''
 
 
+def get_booklist_of_user(user_id, list_type):
+    with open(list_type, 'r') as lst:
+        data = json.loads(lst.read())
+        return data[user_id]
+
+def add_user_to_list(book_id, user_id, list_type):
+    with open(list_type, 'r') as data:
+        readinglist = json.loads(data.read())
+
+        with open(list_type, 'w') as datawrite:
+            readinglist[user_id] = readinglist.get(user_id, []) + [book_id]
+            datawrite.write(json.dumps(readinglist))
+
+
 class AddNewBook(FlaskForm):
+    author = StringField('Автор', validators=[DataRequired()])
     title = StringField('Название книги', validators=[DataRequired()])
-    content = TextAreaField('Описание книги', validators=[DataRequired()])
+    description = TextAreaField('Описание книги', validators=[DataRequired()])
     file = FileField('Добавить книгу', validators=[DataRequired()])
     submit = SubmitField('Добавить')
 
@@ -35,7 +51,7 @@ class AddNewBook(FlaskForm):
 class LoginForm(FlaskForm):
     username = StringField('Логин', validators=[DataRequired()])
     password = PasswordField('Пароль', validators=[DataRequired()])
-    remember_me = BooleanField('Запомнить меня')
+    rememberme = BooleanField('Запомнить меня')
     submit = SubmitField('Войти')
 
 
@@ -47,6 +63,7 @@ class SignInForm(FlaskForm):
 
 @app.route('/')
 @app.route('/index')
+@app.route('/main')
 def index():
     if 'username' not in session:
         return redirect('/login')
@@ -110,30 +127,49 @@ def login():
 
 @app.route('/download_file', methods=['POST', 'GET'])
 def sample_file_upload():
+    if 'username' not in session:
+        return redirect('/login')
     form = AddNewBook()
     if request.method == 'GET':
         return render_template('download_file.html', form=form, username=session['username'])
     elif request.method == 'POST':
-        try:
-            f = request.files['file']
-            if f.filename[f.filname.index('.') in ALLOWED_EXTENSIONS]:
-                with open('books_files/' + f.filename, 'wb') as file:
-                    data = f.read()
-                    file.write(data)
-                return redirect('/')
-            else:
-                return redirect('/error')
-        except Exception:
-            return redirect('/error')
+        # try:
+        f = request.files['file']
+
+        if f.filename[f.filename.index('.') in ALLOWED_EXTENSIONS]:
+            books.insert(form.author._value(), form.title._value(), form.description._value(), session['user_id'],
+                         request.files['file'])
+
+            book_id = books.get_book_id(form.title._value(), form.description._value(), session['user_id'],
+                                        request.files['file'])[0]
+            print(book_id)
+            print(form.title._value(), form.description._value())
+
+            add_user_to_list(book_id, session['user_id'], 'readinglist.json')
+
+            users.increase_num_of_books(session['user_id'])
+
+            with open('books_files/' + f.filename, 'wb') as file:
+                data = f.read()
+                file.write(data)
+
+            return redirect('/')
+        else:
+            return '''Wrong extension of the file'''
+    # except Exception:
+    #     return redirect('/error')
 
 
 @app.route('/users_log')
 def users_log():
+    if 'username' not in session:
+        return redirect('/login')
     user_list = [i[1] for i in users.get_users()]
     logs = {}
     for user in list(set(user_list)):
         us = users.get_id(user)[1]
         logs[user] = len(books.get_all(us))
+        users.get(session['user_id'])
     return render_template('user_logs.html', logs=logs, user_list=user_list, username='admin')
 
 

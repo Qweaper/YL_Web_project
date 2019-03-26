@@ -8,7 +8,8 @@ class UserModel:
         cursor.execute('''CREATE TABLE IF NOT EXISTS users 
                             (id INTEGER PRIMARY KEY AUTOINCREMENT, 
                              user_name VARCHAR(50),
-                             password_hash VARCHAR(128)
+                             password_hash VARCHAR(128),
+                             book_num INTEGER
                              )''')
         cursor.close()
         self.connection.commit()
@@ -18,8 +19,8 @@ class UserModel:
             raise ValueError
         cursor = self.connection.cursor()
         cursor.execute('''INSERT INTO users 
-                          (user_name, password_hash) 
-                          VALUES (?,?)''', (user_name, password_hash))
+                          (user_name, password_hash, book_num) 
+                          VALUES (?,?,?)''', (user_name, password_hash, '0'))
         cursor.close()
         self.connection.commit()
 
@@ -79,5 +80,13 @@ class UserModel:
 
         cursor.execute('''UPDATE users SET password_hash=(?) WHERE id = ?''', (password, str(user_id)))
 
+        cursor.close()
+        self.connection.commit()
+
+    def increase_num_of_books(self, user_id):
+        cursor = self.connection.cursor()
+        cursor.execute('''SELECT book_num FROM users WHERE id = ?''', (user_id,))
+        number = cursor.fetchone()[0]
+        cursor.execute('''UPDATE users SET book_num=(?) WHERE id = ?''', (number + 1, user_id))
         cursor.close()
         self.connection.commit()
