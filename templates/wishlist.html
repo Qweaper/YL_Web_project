@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block lists %}
+    {% if booklist == -1 %}
+        <a>Ваш список пуст</a>
+    {% else %}
+        {% for book in booklist %}
+            <div>
+            <a href="" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ book[1] }} - {{ book[-1] }}</h5>
+                </div>
+                <p class="mb-1">{{ book[2] }}</p>
+            </a>
+
+                <a href="/delete/{{ path }}/{{ book[0] }}" style="margin-left: 20px">Удалить из этого списка</a>
+            </div>
+        {% endfor %}
+    {% endif %}
+    <h4 style="margin-top: 30px; margin-left: 20px"><a href="#">Наша библиотека</a></h4>
+{% endblock %}

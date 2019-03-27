@@ -29,15 +29,25 @@ curr_user = ''
 def get_booklist_of_user(user_id, list_type):
     with open(list_type, 'r') as lst:
         data = json.loads(lst.read())
-        return data[user_id]
+        return data[str(user_id)]
+
+
+def remove_book_from_list(book_id, user_id, list_type):
+    with open(list_type, 'r') as data:
+        lst = json.loads(data.read())
+        print(lst)
+        with open(list_type, 'w') as datawrite:
+            del lst[str(user_id)][lst[str(user_id)].index(book_id)]
+            datawrite.write(json.dumps(lst))
+
 
 def add_user_to_list(book_id, user_id, list_type):
     with open(list_type, 'r') as data:
-        readinglist = json.loads(data.read())
+        lst = json.loads(data.read())
 
         with open(list_type, 'w') as datawrite:
-            readinglist[user_id] = readinglist.get(user_id, []) + [book_id]
-            datawrite.write(json.dumps(readinglist))
+            lst[str(user_id)] = lst.get(str(user_id), []) + [book_id]
+            datawrite.write(json.dumps(lst))
 
 
 class AddNewBook(FlaskForm):
@@ -70,7 +80,20 @@ def index():
     mod = 0
     if session['username'] == 'admin':
         mod = 1
-    return render_template('base.html', mod=mod, username=session['username'])
+    try:
+        wishlist = get_booklist_of_user(session['user_id'], 'wishlist.json')
+    except Exception:
+        wishlist = []
+    try:
+        readinglist = get_booklist_of_user(session['user_id'], 'readinglist.json')
+    except Exception:
+        readinglist = []
+    try:
+        hreadlist = get_booklist_of_user(session['user_id'], 'hreadlist.json')
+    except Exception:
+        hreadlist = []
+    return render_template('main_page.html', mod=mod, username=session['username'],
+                           num_of_wishes=len(wishlist), num_of_reading=len(readinglist), num_of_hread=len(hreadlist))
 
 
 @app.route('/success')
@@ -88,6 +111,25 @@ def logout():
     session.pop('username', 0)
     session.pop('user_id', 0)
     return redirect('/login')
+
+
+@app.route('/wishlist', methods=['POST', 'GET'])
+@app.route('/readinglist', methods=['POST', 'GET'])
+@app.route('/hreadlist', methods=['POST', 'GET'])
+def lists():
+    if 'username' not in session:
+        return redirect('/login')
+    link = request.path
+    try:
+        if request.method == 'GET':
+            wishlist = get_booklist_of_user(session['user_id'], link[1:] + '.json')
+            for i in wishlist:
+                book_info = books.get(i)
+            return render_template('wishlist.html', username=session['username'], booklist=book_info, path=link)
+    except Exception:
+        return render_template('wishlist.html', booklist=-1, username=session['username'])
+    if request.method == 'POST':
+        pass
 
 
 @app.route('/sign_in', methods=['GET', 'POST'])
@@ -142,8 +184,6 @@ def sample_file_upload():
 
             book_id = books.get_book_id(form.title._value(), form.description._value(), session['user_id'],
                                         request.files['file'])[0]
-            print(book_id)
-            print(form.title._value(), form.description._value())
 
             add_user_to_list(book_id, session['user_id'], 'readinglist.json')
 
@@ -158,6 +198,12 @@ def sample_file_upload():
             return '''Wrong extension of the file'''
     # except Exception:
     #     return redirect('/error')
+
+
+@app.route('/delete/<string:path>/<int:book_id>')
+def delete(path, book_id):
+    remove_book_from_list(book_id, session['user_id'], path + '.json')
+    return redirect('/' + path)
 
 
 @app.route('/users_log')

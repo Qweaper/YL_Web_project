@@ -28,7 +28,7 @@ class BooksModel:
     def get(self, book_id):
         cursor = self.connection.cursor()
         cursor.execute("SELECT * FROM books WHERE id = ?", (str(book_id)))
-        row = cursor.fetchone()
+        row = cursor.fetchall()
         return row
 
     def get_all(self, user_id=None):

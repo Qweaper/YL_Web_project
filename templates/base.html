@@ -6,7 +6,7 @@
           href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
           crossorigin="anonymous">
-    <title>Новости</title>
+    <title>Бибилотека</title>
 
 </head>
 <body>
@@ -14,14 +14,36 @@
     <a class="navbar-brand" href="#">{{ username }}</a>
     <form method="POST" novalidate>
     </form>
-
-    {% if mod == 1 %}
-        <a href="/users_log">Список пользователей</a>
-    {% endif %}
-    <a href="/">Главная страница</a>
-    <a href="/download_file">Загрузить</a>
-    <a href="/logout">Logout</a>
-
+    <style>
+        .text_style {
+            margin-left: 10px;
+            background-color: aliceblue;
+            color: rgba(0, 0, 0, 0.74);
+            display: inline-block;
+            font-weight: 300;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            border: 1px solid transparent;
+            padding: .375rem .75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: .25rem;
+            transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+        }
+    </style>
+    <div style="margin-left: 74%">
+        {% if mod == 1 %}
+            <a class="text_style" href="/users_log">Список пользователей</a>
+        {% endif %}
+        <a class="text_style" href="/">Главная страница</a>
+        <a class="text_style" href="/download_file">Загрузить</a>
+        <a class="text_style" href="/logout">Logout</a>
+    </div>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
@@ -40,8 +62,10 @@
         <a> {{ item[-1] }} </a>
     </div>
 {% endfor %}
+
 {% block file_download %}{% endblock %}
 {% block user_list %}{% endblock %}
 {% block main_page %}{% endblock %}
+{% block lists %}{% endblock %}
 </body>
 </html>
