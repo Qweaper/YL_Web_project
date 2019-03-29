@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block library %}
+    <head>
+        <title>Наша библиотека</title>
+    </head>
+    {% for book in booklist %}
+        <div>
+            <a href="" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ book[1] }} - {{ book[-2] }}</h5>
+                </div>
+                <p class="mb-1">{{ book[2] }}</p>
+                <style>
+                    .textx {
+                        margin-right: 20px;
+                    }
+                </style>
+                {% if book[-1] not in ['желаний', 'читаемого','прочитанного'] %}
+                    <a class="textx" href="/add_to_hread/{{ book[0] }}">Прочитано</a>
+                    <a class="textx" href="/add_to_reading/{{ book[0] }}">Читаю</a>
+                    <a class="textx" href="/add_to_wishes/{{ book[0] }}">Отложить в желаемое</a>
+                {% else %}
+                    <a>Кгига уже в списке {{ book[-1] }}</a>
+                {% endif %}
+            </a>
+            <a style="margin-left: 30px" href="download/{{ book[0] }}">Скачать</a>
+            <a style="margin-left: 30px" href="#">Номер ISBN</a>
+        </div>
+    {% endfor %}
+{% endblock %}

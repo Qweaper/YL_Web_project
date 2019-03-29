@@ -5,16 +5,32 @@
     {% else %}
         {% for book in booklist %}
             <div>
-            <a href="" class="list-group-item list-group-item-action">
-                <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">{{ book[1] }} - {{ book[-1] }}</h5>
-                </div>
-                <p class="mb-1">{{ book[2] }}</p>
-            </a>
-
+                <a href="" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ book[1] }} - {{ book[-1] }}</h5>
+                    </div>
+                    <p class="mb-1">{{ book[2] }}</p>
+                    <style>
+                        .textx{
+                            margin-right: 20px;
+                        }
+                    </style>
+                    {% if path == 'readinglist' %}
+                        <a class="textx" href="/change/readinglist/hreadlist/{{ book[0] }}">Прочитано</a>
+                        <a href="/change/readinglist/wishlist/{{ book[0] }}">Отложить в желаемое</a>
+                    {% endif %}
+                    {% if path == 'wishlist' %}
+                        <a class="textx" href="/change/wishlist/hreadlist/{{ book[0] }}">Прочитано</a>
+                        <a href="/change/wishlist/readinglist/{{ book[0] }}">Читаю</a>
+                    {% endif %}
+                    {% if path == 'hreadlist' %}
+                        <a class="textx" href="/change/hreadlist/readinglist/{{ book[0] }}">Читаю</a>
+                        <a href="/change/hreadlist/wishlist/{{ book[0] }}">Отложить в желаемое</a>
+                    {% endif %}
+                </a>
+                <a style="margin-left: 30px" href="download/{{ book[0] }}">Скачать</a>
                 <a href="/delete/{{ path }}/{{ book[0] }}" style="margin-left: 20px">Удалить из этого списка</a>
             </div>
         {% endfor %}
     {% endif %}
-    <h4 style="margin-top: 30px; margin-left: 20px"><a href="#">Наша библиотека</a></h4>
 {% endblock %}

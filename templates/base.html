@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+                    initial-scale=1, shrink-to-fit=yes">
     <link rel="stylesheet"
           href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
@@ -10,13 +12,12 @@
 
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="min-width: 1000px;">
     <a class="navbar-brand" href="#">{{ username }}</a>
     <form method="POST" novalidate>
     </form>
     <style>
         .text_style {
-            margin-left: 10px;
             background-color: aliceblue;
             color: rgba(0, 0, 0, 0.74);
             display: inline-block;
@@ -36,7 +37,7 @@
             transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
         }
     </style>
-    <div style="margin-left: 74%">
+    <div>
         {% if mod == 1 %}
             <a class="text_style" href="/users_log">Список пользователей</a>
         {% endif %}
@@ -67,5 +68,9 @@
 {% block user_list %}{% endblock %}
 {% block main_page %}{% endblock %}
 {% block lists %}{% endblock %}
+{% block library %}{% endblock %}
+
+<div style="margin-top: 30px; margin-left: 20px"><h4><a href="/library">Наша библиотека</a></h4></div>
+
 </body>
 </html>
