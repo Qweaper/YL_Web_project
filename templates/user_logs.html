@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block user_list %}
+    <title>Список пользователей</title>
+
+{% for item in user_list %}
+    <div class="alert alert-dark" role="alert">
+        <h2>{{item}}</h2>
+        <div>Книг загружено: {{logs[item]}}</div>
+    </div>
+{% endfor %}
+{% endblock %}

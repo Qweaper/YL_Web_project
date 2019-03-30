@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block main_page %}
+    <ul class="list-group">
+        <li class="list-group-item d-flex justify-content-between align-items-center"><a href="/wishlist">Запланировано</a>
+            <span class="badge badge-primary badge-pill">{{ num_of_wishes }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center"><a href="/readinglist">Читаю</a>
+            <span class="badge badge-primary badge-pill">{{ num_of_reading }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center"><a href="/hreadlist">Прочитано</a>
+            <span class="badge badge-primary badge-pill">{{ num_of_hread }}</span>
+        </li>
+    </ul>
+{% endblock %}

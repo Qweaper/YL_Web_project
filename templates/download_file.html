@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block file_download %}
+    <form method="post" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.author.label }}<br>
+            {{ form.author }}
+            {% for error in form.author.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.title.label }}<br>
+            {{ form.title }}<br>
+            {% for error in form.title.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.description.label }}<br>
+            {{ form.description }}<br>
+            {% for error in form.description.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
+        <p>
+        <div class="form-group">
+            <input type="file" class="form-control-file" id="photo" name="file">
+        </div>
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+                    initial-scale=1, shrink-to-fit=yes">
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+    <title>Бибилотека</title>
+
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="min-width: 1000px;">
+    <a class="navbar-brand" href="#">{{ username }}</a>
+    <form method="POST" novalidate>
+    </form>
+    <style>
+        .text_style {
+            background-color: aliceblue;
+            color: rgba(0, 0, 0, 0.74);
+            display: inline-block;
+            font-weight: 300;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            border: 1px solid transparent;
+            padding: .375rem .75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: .25rem;
+            transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+        }
+    </style>
+    <div>
+        {% if mod == 1 %}
+            <a class="text_style" href="/users_log">Список пользователей</a>
+        {% endif %}
+        <a class="text_style" href="/">Главная страница</a>
+        <a class="text_style" href="/download_file">Загрузить</a>
+        <a class="text_style" href="/logout">Logout</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+            </li>
+        </ul>
+    </div>
+</nav>
+{% for item in news %}
+    <div class="alert alert-dark" role="alert">
+        <h2>{{ item[1] }}</h2>
+        <div>{{ item[2] }}</div>
+        {% if id == item[0] or id == 1 %}
+            <a href="/delete_news/{{ item[0] }}">Удалить новость</a>
+        {% endif %}
+        <a> {{ item[-1] }} </a>
+    </div>
+{% endfor %}
+
+{% block file_download %}{% endblock %}
+{% block user_list %}{% endblock %}
+{% block main_page %}{% endblock %}
+{% block lists %}{% endblock %}
+{% block library %}{% endblock %}
+
+<div style="margin-top: 30px; margin-left: 20px"><h4><a href="/library">Наша библиотека</a></h4></div>
+
+</body>
+</html>
