@@ -11,17 +11,18 @@ class BooksModel:
                              description VARCHAR(1000),
                              book_filename VARCHAR (50),
                              user_id INTEGER,
-                             author VARCHAR (100)
+                             author VARCHAR (30),
+                             isbn VARCHAR (30) DEFAULT ''
                              )''')
         cursor.close()
         self.connection.commit()
 
-    def insert(self, author, title, description, user_id, book_filename):
+    def insert(self, author, title, description, user_id, book_filename, isbn=''):
         cursor = self.connection.cursor()
         cursor.execute('''INSERT INTO books 
-                          (author, title, description, user_id, book_filename) 
-                          VALUES (?,?,?,?,?)''', (author, str(title), str(description), str(user_id),
-                                                  str(book_filename)))
+                          (author, title, description, user_id, book_filename, isbn) 
+                          VALUES (?,?,?,?,?,?)''', (author, str(title), str(description), str(user_id),
+                                                    str(book_filename), isbn))
         cursor.close()
         self.connection.commit()
 

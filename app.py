@@ -21,9 +21,10 @@ users.init_table()
 books = BooksModel(db.get_connection())
 books.init_table()
 try:
-    users.insert('admin', '21232f297a57a5a743894a0e4a801fc3')
-except Exception:
-    pass
+    users.insert('admin', '21232f297a57a5a743894a0e4a801fc3', 'ADMIN', 'Admin@mail.ru')
+    users.set_user_status('admin', True)
+except Exception as e:
+    print(e)
 session = {}
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 curr_user = ''
@@ -67,6 +68,7 @@ class AddNewBook(FlaskForm):
     author = StringField('Автор', validators=[DataRequired()])
     title = StringField('Название книги', validators=[DataRequired()])
     description = TextAreaField('Описание книги', validators=[DataRequired()])
+    isbn = StringField('ISBN (при наличии)')
     file = FileField('Добавить книгу', validators=[DataRequired()])
     submit = SubmitField('Добавить')
 
@@ -80,8 +82,19 @@ class LoginForm(FlaskForm):
 
 class SignInForm(FlaskForm):
     username = StringField('Логин', validators=[DataRequired()])
+    view_name = StringField('Отоброжаемое имя', validators=[DataRequired()])
     password = PasswordField('Пароль', validators=[DataRequired()])
+    email = StringField('Mail', validators=[DataRequired()])
+
     submit = SubmitField('Зарегистрироваться')
+
+
+class UpdateInfo(FlaskForm):
+    username = PasswordField('Новый пароль')
+    view_name = StringField('Отоброжаемое имя')
+    password = PasswordField('Пароль', validators=[DataRequired()])
+    email = StringField('Mail')
+    submit = SubmitField('Обновить')
 
 
 @app.route('/')
@@ -90,9 +103,7 @@ class SignInForm(FlaskForm):
 def index():
     if 'username' not in session:
         return redirect('/login')
-    mod = 0
-    if session['username'] == 'admin':
-        mod = 1
+    mod = users.get(session['user_id'])[-3]
     try:
         wishlist = get_booklist_of_user(session['user_id'], 'wishlist.json')
     except Exception:
@@ -105,6 +116,7 @@ def index():
         hreadlist = get_booklist_of_user(session['user_id'], 'hreadlist.json')
     except Exception:
         hreadlist = []
+    username = users.get(session['user_id'])
     return render_template('main_page.html', mod=mod, username=session['username'],
                            num_of_wishes=len(wishlist), num_of_reading=len(readinglist), num_of_hread=len(hreadlist))
 
@@ -154,9 +166,11 @@ def sign_in():
             return render_template('sign_in.html', form=form)
         if request.method == 'POST':
             user_name = form.username.data
+            view_name = form.view_name.data
+            mail = form.email.data
             hash_of_passw = hashlib.md5(form.password.data.encode('utf-8'))
             password = hash_of_passw.hexdigest()
-            users.insert(user_name, password)
+            users.insert(user_name, password, view_name, mail)
             return redirect('/login')
     except ValueError:
         return redirect('/error')
@@ -176,9 +190,9 @@ def login():
             user_model = UserModel(db.get_connection())
             exists = user_model.exists(user_name, password)
             if exists[0]:
-                session['username'] = user_name
+                session['username'] = users.get(exists[1])[-2]
                 session['user_id'] = exists[1]
-
+                session['login'] = user_name
             return redirect("/index")
         except ValueError:
             return redirect('/error')
@@ -196,7 +210,7 @@ def sample_file_upload():
 
         if f.filename[f.filename.index('.') in ALLOWED_EXTENSIONS]:
             books.insert(form.author._value(), form.title._value(), form.description._value(), session['user_id'],
-                         request.files['file'].filename)
+                         request.files['file'].filename, form.isbn.data)
 
         book_id = books.get_book_id(form.title._value(), form.description._value(), session['user_id'],
                                     request.files['file'].filename)[0]
@@ -245,23 +259,58 @@ def change_book_location(book_id, frm, to):
     return redirect('/' + frm)
 
 
+@app.route('/change_user_status/<string:login>/<int:status>')
+def stats(login, status):
+    users.set_user_status(login, status)
+    return redirect('/users_log')
+
+
+@app.route('/profile')
+def profile():
+    user = users.get(session['user_id'])
+    return render_template('profile.html', user=user, username=session['username'])
+
+
 @app.route('/download/<int:book_id>')
 def download(book_id):
     filename = books.get(book_id)[0][-3]
     return send_from_directory(FILE_DIR, filename)
 
 
+@app.route('/update_info', methods=['GET', 'POST'])
+def update():
+    form = UpdateInfo()
+    if request.method == 'GET':
+        return render_template('update.html', form=form)
+    if request.method == 'POST':
+        new_view_name = form.view_name.data
+        mail = form.email.data
+        old_pass = form.username.data
+        new_pass = form.password.data
+        exists = users.exists(session['login'], hashlib.md5(old_pass.encode('utf-8')).hexdigest())[0]
+        if exists:
+            if new_pass != '':
+                users.edit_password(session['user_id'], new_pass)
+            if new_pass != '':
+                users.edit_view_name(session['user_id'], new_view_name)
+            if new_pass != '':
+                users.edit_email(session['user_id'], mail)
+            session['username'] = new_view_name
+            return redirect('/')
+        else:
+            return redirect('/error')
+
+
 @app.route('/users_log')
 def users_log():
     if 'username' not in session:
         return redirect('/login')
-    user_list = [i[1] for i in users.get_users()]
+    user_list = [[i[-2], i[-3], i[1]] for i in users.get_users()]
     logs = {}
-    for user in list(set(user_list)):
-        us = users.get_id(user)[1]
-        logs[user] = len(books.get_all(us))
-        users.get(session['user_id'])
-    return render_template('user_logs.html', logs=logs, user_list=user_list, username='admin')
+    for user in user_list:
+        us = users.get_id(user[-1])[1]
+        logs[user[0]] = len(books.get_all(us))
+    return render_template('user_logs.html', logs=logs, user_list=user_list, username=session['username'])
 
 
 if __name__ == '__main__':

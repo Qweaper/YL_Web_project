@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
 {% block lists %}
-    {% if booklist == -1 %}
+    {% if booklist == [] %}
         <a>Ваш список пуст</a>
     {% else %}
         {% for book in booklist %}
             <div>
                 <a href="" class="list-group-item list-group-item-action">
                     <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">{{ book[1] }} - {{ book[-1] }}</h5>
+                        <h5 class="mb-1">{{ book[1] }} - {{ book[-2] }}</h5>
                     </div>
                     <p class="mb-1">{{ book[2] }}</p>
                     <style>
-                        .textx{
+                        .textx {
                             margin-right: 20px;
                         }
                     </style>
@@ -28,6 +28,11 @@
                         <a href="/change/hreadlist/wishlist/{{ book[0] }}">Отложить в желаемое</a>
                     {% endif %}
                 </a>
+                {% if book[-1] != '' %}
+                <a style="margin-left: 30px">Номер ISBN: {{ book[-1] }}</a>
+                {% else %}
+                <a style="margin-left: 30px">Номер ISBN: Отсутсвует</a>
+                {% endif %}
                 <a style="margin-left: 30px" href="download/{{ book[0] }}">Скачать</a>
                 <a href="/delete/{{ path }}/{{ book[0] }}" style="margin-left: 20px">Удалить из этого списка</a>
             </div>

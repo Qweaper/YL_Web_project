@@ -1,3 +1,6 @@
+import hashlib
+
+
 class UserModel:
 
     def __init__(self, connection):
@@ -9,24 +12,27 @@ class UserModel:
                             (id INTEGER PRIMARY KEY AUTOINCREMENT, 
                              user_name VARCHAR(50),
                              password_hash VARCHAR(128),
-                             book_num INTEGER
+                             book_num INTEGER,
+                             admin INTEGER DEFAULT 0,
+                             view_name VARCHAR(50),
+                             mail VARCHAR (50)
                              )''')
         cursor.close()
         self.connection.commit()
 
-    def insert(self, user_name, password_hash):
+    def insert(self, user_name, password_hash, view_name, mail):
         if self.exists(user_name, password_hash)[0]:
             raise ValueError
         cursor = self.connection.cursor()
         cursor.execute('''INSERT INTO users 
-                          (user_name, password_hash, book_num) 
-                          VALUES (?,?,?)''', (user_name, password_hash, '0'))
+                          (user_name, password_hash, book_num, view_name, mail) 
+                          VALUES (?,?,?,?,?)''', (user_name, password_hash, '0', view_name, mail))
         cursor.close()
         self.connection.commit()
 
     def get(self, user_id):
         cursor = self.connection.cursor()
-        cursor.execute("SELECT * FROM users WHERE id = ?", (str(user_id)))
+        cursor.execute("SELECT * FROM users WHERE id = ?", (str(user_id),))
         row = cursor.fetchone()
         return row
 
@@ -75,11 +81,32 @@ class UserModel:
         row = cursor.fetchone()
         return (True, row[0]) if row else (False,)
 
-    def edit(self, user_id, password):
+    def edit_email(self, user_id, new_email):
         cursor = self.connection.cursor()
+        cursor.execute('''UPDATE users SET mail = (?) WHERE id = ?''', (new_email, str(user_id)))
 
+        cursor.close()
+        self.connection.commit()
+
+    def edit_view_name(self, user_id, view_name):
+        cursor = self.connection.cursor()
+        cursor.execute('''UPDATE users SET view_name=(?) WHERE id = ?''', (view_name, str(user_id)))
+
+        cursor.close()
+        self.connection.commit()
+
+    def edit_password(self, user_id, password):
+        cursor = self.connection.cursor()
+        hash_of_passw = hashlib.md5(password.encode('utf-8'))
+        password = hash_of_passw.hexdigest()
         cursor.execute('''UPDATE users SET password_hash=(?) WHERE id = ?''', (password, str(user_id)))
 
+        cursor.close()
+        self.connection.commit()
+
+    def set_user_status(self, login, status):
+        cursor = self.connection.cursor()
+        cursor.execute('''UPDATE users SET admin = (?) WHERE user_name = ?''', (status, login))
         cursor.close()
         self.connection.commit()
 
