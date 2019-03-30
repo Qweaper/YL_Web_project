@@ -2,10 +2,18 @@
 {% block user_list %}
     <title>Список пользователей</title>
 
-{% for item in user_list %}
-    <div class="alert alert-dark" role="alert">
-        <h2>{{item}}</h2>
-        <div>Книг загружено: {{logs[item]}}</div>
-    </div>
-{% endfor %}
+    {% for item in user_list %}
+        <div class="alert alert-dark" role="alert">
+            <h2>{{ item[0] }}</h2>
+            <small>{{ item[-1] }}</small>
+            <div>Книг загружено: {{ logs[item[0]] }}</div>
+            {% if username != item[0] %}
+                {% if item[1] == 0 %}
+                <a href="/change_user_status/{{ item[-1] }}/1">Повысить до админа</a>
+                {% else %}
+                <a href="/change_user_status/{{ item[-1] }}/0">Расжаловать до пользователя</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endfor %}
 {% endblock %}

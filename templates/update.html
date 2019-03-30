@@ -1,16 +1,7 @@
 {% block content %}
-    <h1>Регистрация</h1>
+    <h1>Обновить информацию</h1>
+
     <form action="" method="post" novalidate>
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.username.label }}<br>
-            {{ form.username }}<br>
-            {% for error in form.username.errors %}
-                <div class="alert alert-danger" role="alert">
-                    {{ error }}
-                </div>
-            {% endfor %}
-        </p>
         <p>
             {{ form.view_name.label }}<br>
             {{ form.view_name }}<br>
@@ -30,7 +21,7 @@
             {% endfor %}
         </p>
         <p>
-            {{ form.password.label }}<br>
+            Новый {{ form.password.label }}<br>
             {{ form.password }}<br>
             {% for error in form.password.errors %}
                 <div class="alert alert-danger" role="alert">
@@ -38,6 +29,16 @@
                 </div>
             {% endfor %}
         </p>
+        <p>
+            Старый пароль для подтверждения изменений<br>
+            {{ form.username }}<br>
+            {% for error in form.username.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
+
         <p>{{ form.submit() }}</p>
     </form>
 {% endblock %}

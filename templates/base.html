@@ -38,10 +38,11 @@
         }
     </style>
     <div>
-        {% if mod == 1 %}
+        {% if mod == True %}
             <a class="text_style" href="/users_log">Список пользователей</a>
         {% endif %}
         <a class="text_style" href="/">Главная страница</a>
+        <a class="text_style" href="/profile">Профиль</a>
         <a class="text_style" href="/download_file">Загрузить</a>
         <a class="text_style" href="/logout">Logout</a>
     </div>
@@ -69,7 +70,7 @@
 {% block main_page %}{% endblock %}
 {% block lists %}{% endblock %}
 {% block library %}{% endblock %}
-
+{% block profile %}{% endblock %}
 <div style="margin-top: 30px; margin-left: 20px"><h4><a href="/library">Наша библиотека</a></h4></div>
 
 </body>

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block profile %}
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Профиль</title>
+    </head>
+    <body>
+        <h2>Ник: {{ user[-2] }}</h2><br>
+        <a>Логин: {{ user[1] }}</a><br>
+        <a>Почта: {{ user[-1] }}</a><br>
+        <a href="/update_info">Обновить информацию</a>
+    </body>
+{% endblock %}https://puzzleweb.ru/html/4_headings_lines.php

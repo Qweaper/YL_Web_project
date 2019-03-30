@@ -7,7 +7,7 @@
         <div>
             <a href="" class="list-group-item list-group-item-action">
                 <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">{{ book[1] }} - {{ book[-2] }}</h5>
+                    <h5 class="mb-1">{{ book[1] }} - {{ book[-3] }}</h5>
                 </div>
                 <p class="mb-1">{{ book[2] }}</p>
                 <style>
@@ -24,7 +24,11 @@
                 {% endif %}
             </a>
             <a style="margin-left: 30px" href="download/{{ book[0] }}">Скачать</a>
-            <a style="margin-left: 30px" href="#">Номер ISBN</a>
+            {% if book[-2] != '' %}
+                <a style="margin-left: 30px">Номер ISBN: {{ book[-2] }}</a>
+                {% else %}
+                <a style="margin-left: 30px">Номер ISBN: Отсутсвует</a>
+                {% endif %}
         </div>
     {% endfor %}
 {% endblock %}
