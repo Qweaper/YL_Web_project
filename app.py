@@ -39,7 +39,6 @@ def get_booklist_of_user(user_id, list_type):
 def remove_book_from_list(book_id, user_id, list_type):
     with open(list_type, 'r') as data:
         lst = json.loads(data.read())
-        print(lst)
         with open(list_type, 'w') as datawrite:
             del lst[str(user_id)][lst[str(user_id)].index(book_id)]
             datawrite.write(json.dumps(lst))
@@ -136,9 +135,10 @@ def lists():
     link = request.path[1:]
     try:
         if request.method == 'GET':
+            book_info = []
             wishlist = get_booklist_of_user(session['user_id'], link + '.json')
             for i in wishlist:
-                book_info = books.get(i)
+                book_info.append(books.get(i)[0])
             return render_template('wishlist.html', username=session['username'], booklist=book_info, path=link)
     except Exception:
         return render_template('wishlist.html', booklist=-1, username=session['username'])
@@ -156,7 +156,6 @@ def sign_in():
             user_name = form.username.data
             hash_of_passw = hashlib.md5(form.password.data.encode('utf-8'))
             password = hash_of_passw.hexdigest()
-            print(password)
             users.insert(user_name, password)
             return redirect('/login')
     except ValueError:
@@ -174,7 +173,6 @@ def login():
             user_name = form.username.data
             hash_of_passw = hashlib.md5(form.password.data.encode('utf-8'))
             password = hash_of_passw.hexdigest()
-            print(password)
             user_model = UserModel(db.get_connection())
             exists = user_model.exists(user_name, password)
             if exists[0]:
@@ -194,7 +192,6 @@ def sample_file_upload():
     if request.method == 'GET':
         return render_template('download_file.html', form=form, username=session['username'])
     elif request.method == 'POST':
-        # try:
         f = request.files['file']
 
         if f.filename[f.filename.index('.') in ALLOWED_EXTENSIONS]:
@@ -215,24 +212,20 @@ def sample_file_upload():
         return redirect('/')
     else:
         return '''Wrong extension of the file'''
-# except Exception:
-#     return redirect('/error')
 
 
 @app.route('/delete/<string:path>/<int:book_id>')
 def delete(path, book_id):
-    print(path)
     remove_book_from_list(book_id, session['user_id'], path + '.json')
     return redirect('/' + path)
 
 
-# добавить функцию, говорящую о расположение книги в списке
 @app.route('/library')
 def library():
+    lst = []
     booklist = books.get_all()
-    # exceptions = books.get_all(session['user_id'])
     for i in booklist:
-        lst = [list(i) + [check_book_list(session['user_id'], i[0])]]
+        lst.append(list(i) + [check_book_list(session['user_id'], i[0])])
     return render_template('library.html', username=session['username'], booklist=lst)
 
 
@@ -241,7 +234,6 @@ def library():
 @app.route('/add_to_wishes/<int:book_id>')
 def add_book(book_id):
     path = request.path[8:-2]
-    print(path)
     add_book_to_list(book_id, session['user_id'], path + 'list.json')
     return redirect('/library')
 
