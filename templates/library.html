@@ -18,7 +18,7 @@
                 {% if book[-1] not in ['желаний', 'читаемого','прочитанного'] %}
                     <a class="textx" href="/add_to_hread/{{ book[0] }}">Прочитано</a>
                     <a class="textx" href="/add_to_reading/{{ book[0] }}">Читаю</a>
-                    <a class="textx" href="/add_to_wishes/{{ book[0] }}">Отложить в желаемое</a>
+                    <a class="textx" href="/add_to_wish/{{ book[0] }}">Отложить в желаемое</a>
                 {% else %}
                     <a>Кгига уже в списке {{ book[-1] }}</a>
                 {% endif %}

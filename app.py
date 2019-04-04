@@ -66,8 +66,9 @@ def check_book_list(user_id, book_id):
     for i in ['wishlist', 'readinglist', 'hreadlist']:
         with open(i + '.json', 'r') as file:
             data = json.loads(file.read())
-            if book_id in data[str(user_id)]:
-                return words[i]
+            if str(user_id) in data.keys():
+                if book_id in data[str(user_id)]:
+                    return words[i]
     return False
 
 
@@ -252,7 +253,7 @@ def library():
 
 @app.route('/add_to_hread/<int:book_id>')
 @app.route('/add_to_reading/<int:book_id>')
-@app.route('/add_to_wishes/<int:book_id>')
+@app.route('/add_to_wish/<int:book_id>')
 def add_book(book_id):
     path = request.path[8:-2]
     add_book_to_list(book_id, session['user_id'], path + 'list.json')
