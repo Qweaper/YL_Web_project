@@ -1,5 +1,6 @@
 import hashlib
 import json
+import os
 
 from flask import Flask, redirect, render_template, request, send_from_directory
 from flask_wtf import FlaskForm
@@ -29,6 +30,8 @@ session = {}
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 curr_user = ''
 FILE_DIR = 'books_files'
+if not os.path.exists('books_files'):
+    os.mkdir(os.getcwd() + '/' + 'books_files')
 
 
 def get_booklist_of_user(user_id, list_type):
@@ -48,10 +51,14 @@ def remove_book_from_list(book_id, user_id, list_type):
 def add_book_to_list(book_id, user_id, list_type):
     with open(list_type, 'r') as data:
         lst = json.loads(data.read())
+        print(lst, 'aaa')
         with open(list_type, 'w') as datawrite:
-            if book_id not in lst[str(user_id)]:
+            try:
                 lst[str(user_id)] = lst.get(str(user_id), []) + [book_id]
-                datawrite.write(json.dumps(lst))
+            except:
+                new_list = {}
+                new_list[str(user_id)] = new_list.get(str(user_id), []) + [book_id]
+            datawrite.write(json.dumps(lst))
 
 
 def check_book_list(user_id, book_id):
