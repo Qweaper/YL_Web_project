@@ -281,7 +281,8 @@ def profile():
 
 @app.route('/download/<int:book_id>')
 def download(book_id):
-    filename = books.get(book_id)[0][-3]
+    filename = books.get(book_id)[0][-4]
+    print(filename)
     return send_from_directory(FILE_DIR, filename)
 
 
