@@ -51,7 +51,6 @@ def remove_book_from_list(book_id, user_id, list_type):
 def add_book_to_list(book_id, user_id, list_type):
     with open(list_type, 'r') as data:
         lst = json.loads(data.read())
-        print(lst, 'aaa')
         with open(list_type, 'w') as datawrite:
             try:
                 lst[str(user_id)] = lst.get(str(user_id), []) + [book_id]
@@ -282,7 +281,6 @@ def profile():
 @app.route('/download/<int:book_id>')
 def download(book_id):
     filename = books.get(book_id)[0][-4]
-    print(filename)
     return send_from_directory(FILE_DIR, filename)
 
 
