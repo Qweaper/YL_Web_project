@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block lists %}
-    {% if booklist == [] %}
+    {% if booklist == -1 %}
         <a>Ваш список пуст</a>
     {% else %}
         {% for book in booklist %}
