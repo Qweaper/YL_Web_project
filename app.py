@@ -167,6 +167,7 @@ def lists():
 
 @app.route('/sign_in', methods=['GET', 'POST'])
 def sign_in():
+
     try:
         form = SignInForm()
         if request.method == 'GET':
@@ -237,12 +238,16 @@ def sample_file_upload():
 
 @app.route('/delete/<string:path>/<int:book_id>')
 def delete(path, book_id):
+    if 'username' not in session:
+        return redirect('/login')
     remove_book_from_list(book_id, session['user_id'], path + '.json')
     return redirect('/' + path)
 
 
 @app.route('/library')
 def library():
+    if 'username' not in session:
+        return redirect('/login')
     lst = []
     booklist = books.get_all()
     for i in booklist:
@@ -254,6 +259,8 @@ def library():
 @app.route('/add_to_reading/<int:book_id>')
 @app.route('/add_to_wish/<int:book_id>')
 def add_book(book_id):
+    if 'username' not in session:
+        return redirect('/login')
     path = request.path[8:-2]
     add_book_to_list(book_id, session['user_id'], path + 'list.json')
     return redirect('/library')
@@ -261,6 +268,8 @@ def add_book(book_id):
 
 @app.route('/change/<string:frm>/<string:to>/<int:book_id>')
 def change_book_location(book_id, frm, to):
+    if 'username' not in session:
+        return redirect('/login')
     add_book_to_list(book_id, session['user_id'], to + '.json')
     remove_book_from_list(book_id, session['user_id'], frm + '.json')
     return redirect('/' + frm)
@@ -268,24 +277,32 @@ def change_book_location(book_id, frm, to):
 
 @app.route('/change_user_status/<string:login>/<int:status>')
 def stats(login, status):
+    if 'username' not in session:
+        return redirect('/login')
     users.set_user_status(login, status)
     return redirect('/users_log')
 
 
 @app.route('/profile')
 def profile():
+    if 'username' not in session:
+        return redirect('/login')
     user = users.get(session['user_id'])
     return render_template('profile.html', user=user, username=session['username'])
 
 
 @app.route('/download/<int:book_id>')
 def download(book_id):
+    if 'username' not in session:
+        return redirect('/login')
     filename = books.get(book_id)[0][-4]
     return send_from_directory(FILE_DIR, filename)
 
 
 @app.route('/update_info', methods=['GET', 'POST'])
 def update():
+    if 'username' not in session:
+        return redirect('/login')
     form = UpdateInfo()
     if request.method == 'GET':
         return render_template('update.html', form=form)
@@ -312,6 +329,8 @@ def update():
 def users_log():
     if 'username' not in session:
         return redirect('/login')
+    if users.get(session['user_id'])[-3] != True:
+        return 'Доступ запрещён'
     user_list = [[i[-2], i[-3], i[1]] for i in users.get_users()]
     logs = {}
     for user in user_list:
